@@ -169,13 +169,6 @@ export default function Home() {
                   Login
                 </motion.button>
               </Link>
-              <motion.button
-                className="px-6 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg hover:from-indigo-700 hover:to-purple-700 transition shadow-md hover:shadow-lg"
-                whileHover={{ scale: 1.05, y: -2 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                Start Free
-              </motion.button>
             </div>
 
             <button
@@ -314,7 +307,7 @@ export default function Home() {
               }}
               transition={{ duration: 5, repeat: Infinity }}
             >
-              AI Se Clarity Pao
+              Get Clarity With AI
             </motion.span>
           </motion.h1>
 
@@ -326,10 +319,10 @@ export default function Home() {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.4 }}
           >
-            Skills test karein, AI analysis paayen, aur apne liye perfect career
-            path discover karein.
+            Take skill tests, get AI analysis, and discover the perfect career
+            path for yourself.
             <br />
-            10,000+ students ne apna career path already dhund liya hai! 🚀
+            Over 10,000 students have already found their career path! 🚀
           </motion.p>
 
           <motion.div
@@ -351,17 +344,19 @@ export default function Home() {
                 <ArrowRight className="w-5 h-5" />
               </motion.div>
             </motion.button>
-            <motion.button
-              className={`px-8 py-4 ${
-                darkMode
-                  ? "bg-gray-800 text-gray-200 border-gray-700"
-                  : "bg-white text-gray-700 border-gray-200"
-              } rounded-xl hover:bg-opacity-80 transition shadow-md border text-lg font-semibold`}
-              whileHover={{ scale: 1.05, y: -3 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              Watch Demo
-            </motion.button>
+            <Link to="/demo">
+              <motion.button
+                className={`px-8 py-4 ${
+                  darkMode
+                    ? "bg-gray-800 text-gray-200 border-gray-700"
+                    : "bg-white text-gray-700 border-gray-200"
+                } rounded-xl hover:bg-opacity-80 transition shadow-md border text-lg font-semibold`}
+                whileHover={{ scale: 1.05, y: -3 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                Watch Demo
+              </motion.button>
+            </Link>
           </motion.div>
 
           <motion.div
@@ -405,18 +400,16 @@ export default function Home() {
               darkMode ? "text-white" : "text-gray-900"
             } mb-4`}
           >
-            Kyun MindStep Choose Karein?
+            Why Choose MindStep?
           </h2>
           <p
             className={`text-xl ${
               darkMode ? "text-gray-400" : "text-gray-600"
             }`}
           >
-            AI-powered features jo aapko sahi career decision lene me help
-            karein
+            AI-powered features that help you make the right career decisions
           </p>
         </motion.div>
-
         <motion.div
           className="grid md:grid-cols-3 gap-8"
           variants={staggerContainer}
@@ -428,37 +421,37 @@ export default function Home() {
             {
               icon: Brain,
               title: "AI Analysis",
-              desc: "Advanced AI jo aapke skills, personality, aur academic performance analyze karke best career paths suggest karta hai.",
+              desc: "Advanced AI analyzes your skills, personality, and academic performance to suggest the best career paths.",
               gradient: "from-indigo-500 to-purple-500",
             },
             {
               icon: Upload,
               title: "Marksheet Scan",
-              desc: "10th/12th marksheet upload karein, OCR technology automatically subjects analyze karti hai aur strengths batati hai.",
+              desc: "Upload your 10th/12th marksheet, OCR technology automatically analyzes subjects and identifies your strengths.",
               gradient: "from-purple-500 to-pink-500",
             },
             {
               icon: Target,
               title: "Skill Verification",
-              desc: "Apne skills ko mini-quizzes se verify karein. Self-reporting nahi, real assessment milta hai aapko.",
+              desc: "Verify your skills through mini-quizzes. Get real assessments instead of self-reporting.",
               gradient: "from-pink-500 to-rose-500",
             },
             {
               icon: BarChart3,
               title: "Career Roadmap",
-              desc: "Step-by-step learning roadmap milta hai. Kya seekhna hai, kab seekhna hai - sab clear ho jata hai.",
+              desc: "Get a step-by-step learning roadmap. Know what to learn and when to learn it, everything becomes clear.",
               gradient: "from-green-500 to-emerald-500",
             },
             {
               icon: Users,
               title: "Peer Comparison",
-              desc: "Top 10% students kya kar rahe hain? Successful students ki journey se seekhein aur improve karein.",
+              desc: "See what the top 10% students are doing. Learn from the journey of successful students and improve.",
               gradient: "from-yellow-500 to-orange-500",
             },
             {
               icon: Sparkles,
               title: "AI Mentor",
-              desc: "24/7 AI chatbot mentor jo career doubts solve karta hai, resources suggest karta hai aur motivate karta hai.",
+              desc: "24/7 AI chatbot mentor that solves career doubts, suggests resources, and keeps you motivated.",
               gradient: "from-red-500 to-pink-500",
             },
           ].map((feature, idx) => (
@@ -520,14 +513,14 @@ export default function Home() {
                 darkMode ? "text-white" : "text-gray-900"
               } mb-4`}
             >
-              Kaise Kaam Karta Hai?
+              How It Works?
             </h2>
             <p
               className={`text-xl ${
                 darkMode ? "text-gray-400" : "text-gray-600"
               }`}
             >
-              Sirf 4 simple steps me apna career path discover karein
+              Discover your career path in just 4 simple steps
             </p>
           </motion.div>
 
@@ -541,26 +534,26 @@ export default function Home() {
             {[
               {
                 step: "01",
-                title: "Register Karein",
-                desc: "Email se free account banayein",
+                title: "Register",
+                desc: "Create a free account using your email",
                 icon: Sparkles,
               },
               {
                 step: "02",
-                title: "Tests Complete Karein",
-                desc: "Skill + Psychometric tests complete karein",
+                title: "Complete Tests",
+                desc: "Complete skill + psychometric tests",
                 icon: Target,
               },
               {
                 step: "03",
-                title: "AI Analysis Paayen",
-                desc: "Personalized career recommendations milenge",
+                title: "Get AI Analysis",
+                desc: "Receive personalized career recommendations",
                 icon: Brain,
               },
               {
                 step: "04",
-                title: "Roadmap Follow Karein",
-                desc: "Step-by-step learning path follow karein",
+                title: "Follow Roadmap",
+                desc: "Follow your step-by-step learning path",
                 icon: Zap,
               },
             ].map((item, idx) => (
@@ -634,10 +627,9 @@ export default function Home() {
               darkMode ? "text-gray-400" : "text-gray-600"
             }`}
           >
-            Free me start karein, jab chahein upgrade karein
+            Start free, upgrade anytime
           </p>
         </motion.div>
-
         <motion.div
           className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto"
           variants={staggerContainer}
@@ -795,11 +787,11 @@ export default function Home() {
           variants={fadeUp}
         >
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-            Apne Career Ki Clarity Paayen
+            Get Clarity on Your Career
           </h2>
           <p className="text-xl text-indigo-100 mb-8">
-            Join 10,000+ students jo already apna perfect career path dhund
-            chuke hain
+            Join 10,000+ students who have already discovered their perfect
+            career path
           </p>
           <motion.button
             className="px-8 py-4 bg-white text-indigo-600 rounded-xl hover:bg-gray-100 transition shadow-xl text-lg font-semibold"
