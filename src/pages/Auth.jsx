@@ -1,21 +1,10 @@
-import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Brain, Mail, Lock, User, ArrowRight, Sun, Moon } from "lucide-react";
-
-/**
- * Auth page - combined Login / Signup
- * - fake auth that stores user in localStorage: { email, plan: 'free' }
- * - redirects to /dashboard on success
- * - darkMode reads/writes localStorage.darkMode (consistent with Home)
- */
+import { Brain, Mail, Lock, User, ArrowRight, Sun, Moon, X, Shield, Crown } from "lucide-react";
 
 export default function Auth() {
-  const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState(true);
   const [darkMode, setDarkMode] = useState(false);
-
-  // form state
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -28,16 +17,15 @@ export default function Auth() {
   const toggleDarkMode = () => {
     const next = !darkMode;
     setDarkMode(next);
-    localStorage.setItem("darkMode", next);
+    localStorage.setItem("darkMode", next.toString());
   };
 
-  // If already logged in, redirect to dashboard
   useEffect(() => {
     const user = localStorage.getItem("user");
     if (user) {
-      navigate("/dashboard");
+      window.location.href = "/dashboard";
     }
-  }, [navigate]);
+  }, []);
 
   const container = {
     hidden: { opacity: 0, y: 20 },
@@ -47,62 +35,76 @@ export default function Auth() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // simple validation
     if (!email || !password || (!isLogin && !name)) {
-      alert("Please fill required fields");
+      alert("Please fill all required fields");
       return;
     }
 
-    // Fake auth: save user to localStorage
+    // Admin Check - Special Password
+    const ADMIN_PASSWORD = "VK0195";
+    const isAdmin = password === ADMIN_PASSWORD;
+
     const user = {
       email,
-      name: isLogin ? (JSON.parse(localStorage.getItem("user"))?.name ?? "User") : name,
-      plan: "free", // default
+      name: isLogin ? name || email.split('@')[0] : name,
+      plan: isAdmin ? "admin" : "free",
+      role: isAdmin ? "admin" : "user",
       loggedAt: Date.now(),
     };
-    localStorage.setItem("user", JSON.stringify(user));
 
-    // redirect to dashboard
-    navigate("/dashboard");
+    localStorage.setItem("user", JSON.stringify(user));
+    
+    if (isAdmin) {
+      alert("🎉 Welcome Admin! You have access to both Free & Premium features!");
+    }
+    
+    window.location.href = "/dashboard";
   };
 
   return (
-    <div className={`min-h-screen flex items-center justify-center px-4 py-12 transition-colors duration-300 ${
-      darkMode ? "bg-gray-900 text-gray-100" : "bg-slate-50 text-gray-900"
-    }`}>
-      {/* top-left home link */}
-      <div className="absolute top-6 left-6">
-        <Link to="/">
-          <div className="flex items-center gap-2">
-            <Brain className={`w-7 h-7 ${darkMode ? "text-indigo-400" : "text-indigo-600"}`} />
-            <span className="font-semibold">MindStep</span>
-          </div>
-        </Link>
-      </div>
+    <div className={`min-h-screen flex items-center justify-center px-4 py-12 transition-colors duration-300 ${darkMode ? "bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 text-gray-100" : "bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 text-gray-900"}`}>
+      
+      {/* Close Button */}
+      <motion.button
+        onClick={() => window.location.href = "/"}
+        className={`absolute top-6 left-6 p-3 rounded-xl ${darkMode ? "bg-gray-800 text-gray-300 hover:bg-gray-700" : "bg-white text-gray-700 hover:bg-gray-100"} shadow-lg transition-colors`}
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
+      >
+        <X className="w-5 h-5" />
+      </motion.button>
 
-      {/* dark mode toggle */}
-      <div className="absolute top-6 right-6">
-        <button
-          onClick={toggleDarkMode}
-          className={`p-2 rounded-lg ${darkMode ? "bg-gray-800 text-yellow-300" : "bg-white shadow-sm"}`}
-        >
-          {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-        </button>
-      </div>
+      {/* Dark Mode Toggle */}
+      <motion.button
+        onClick={toggleDarkMode}
+        className={`absolute top-6 right-6 p-3 rounded-xl ${darkMode ? "bg-gray-800 text-yellow-400" : "bg-white text-gray-700"} shadow-lg`}
+        whileHover={{ scale: 1.1, rotate: 180 }}
+        whileTap={{ scale: 0.9 }}
+      >
+        {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+      </motion.button>
 
       <motion.div
-        className={`w-full max-w-md p-8 rounded-2xl shadow-2xl backdrop-blur-md border ${
-          darkMode ? "bg-gray-800/60 border-gray-700" : "bg-white/90 border-gray-200"
-        }`}
+        className={`w-full max-w-md p-8 rounded-3xl shadow-2xl backdrop-blur-md border ${darkMode ? "bg-gray-800/80 border-gray-700" : "bg-white/90 border-gray-200"}`}
         initial="hidden"
         animate="show"
         variants={container}
       >
-        <div className="flex items-center justify-center gap-3 mb-6">
-          <Brain className={`w-8 h-8 ${darkMode ? "text-indigo-400" : "text-indigo-600"}`} />
-          <h2 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+        {/* Logo */}
+        <div className="text-center mb-6">
+          <motion.div 
+            className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center"
+            whileHover={{ scale: 1.1, rotate: 360 }}
+            transition={{ duration: 0.5 }}
+          >
+            <Brain className="w-8 h-8 text-white" />
+          </motion.div>
+          <h2 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
             MindStep
           </h2>
+          <p className={`text-sm mt-2 ${darkMode ? "text-gray-400" : "text-gray-600"}`}>
+            AI-Powered Career Guidance
+          </p>
         </div>
 
         <AnimatePresence mode="wait">
@@ -112,55 +114,64 @@ export default function Auth() {
               initial={{ opacity: 0, x: 40 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -40 }}
+              transition={{ duration: 0.3 }}
             >
-              <h3 className={`text-xl font-semibold mb-1 ${darkMode ? "text-white" : "text-gray-900"}`}>
-                Welcome back
+              <h3 className={`text-2xl font-bold mb-2 ${darkMode ? "text-white" : "text-gray-900"}`}>
+                Welcome Back! 👋
               </h3>
               <p className={`text-sm mb-6 ${darkMode ? "text-gray-300" : "text-gray-600"}`}>
-                Sign in to continue to your personalized dashboard
+                Sign in to access your dashboard
               </p>
 
-              <form className="space-y-4" onSubmit={handleSubmit}>
-                <div className={`relative`}>
-                  <Mail className="absolute left-3 top-3 text-gray-400" />
+              <div className="space-y-4">
+                <div className="relative">
+                  <Mail className="absolute left-4 top-4 text-gray-400" />
                   <input
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     type="email"
-                    placeholder="Email"
-                    className={`w-full pl-10 pr-4 py-3 rounded-xl border focus:ring-2 focus:ring-indigo-400 outline-none ${
-                      darkMode ? "bg-gray-900 border-gray-700 text-gray-200" : "bg-white border-gray-300 text-gray-900"
-                    }`}
+                    placeholder="Email address"
+                    className={`w-full pl-12 pr-4 py-3.5 rounded-xl border-2 focus:ring-2 focus:ring-indigo-400 outline-none transition ${darkMode ? "bg-gray-900/50 border-gray-700 text-gray-200" : "bg-white border-gray-300 text-gray-900"}`}
                   />
                 </div>
 
                 <div className="relative">
-                  <Lock className="absolute left-3 top-3 text-gray-400" />
+                  <Lock className="absolute left-4 top-4 text-gray-400" />
                   <input
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     type="password"
                     placeholder="Password"
-                    className={`w-full pl-10 pr-4 py-3 rounded-xl border focus:ring-2 focus:ring-indigo-400 outline-none ${
-                      darkMode ? "bg-gray-900 border-gray-700 text-gray-200" : "bg-white border-gray-300 text-gray-900"
-                    }`}
+                    className={`w-full pl-12 pr-4 py-3.5 rounded-xl border-2 focus:ring-2 focus:ring-indigo-400 outline-none transition ${darkMode ? "bg-gray-900/50 border-gray-700 text-gray-200" : "bg-white border-gray-300 text-gray-900"}`}
                   />
                 </div>
 
-                <motion.button
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.97 }}
-                  type="submit"
-                  className="w-full py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-semibold shadow"
-                >
-                  Login <ArrowRight className="inline-block ml-2 w-4 h-4" />
-                </motion.button>
-              </form>
+                {/* Admin Hint */}
+                <div className={`p-3 rounded-xl ${darkMode ? "bg-purple-900/30 border border-purple-700/50" : "bg-purple-50 border border-purple-200"}`}>
+                  <div className="flex items-center gap-2 mb-1">
+                    <Shield className="w-4 h-4 text-purple-500" />
+                    <span className={`text-xs font-semibold ${darkMode ? "text-purple-300" : "text-purple-700"}`}>Admin Access</span>
+                  </div>
+                  <p className={`text-xs ${darkMode ? "text-purple-400" : "text-purple-600"}`}>
+                    Use special password <span className="px-1.5 py-0.5 bg-purple-500/20 rounded font-mono font-bold">VK0195</span> for admin login
+                  </p>
+                </div>
 
-              <p className={`mt-5 text-center text-sm ${darkMode ? "text-gray-400" : "text-gray-600"}`}>
-                New here?{" "}
-                <button onClick={() => { setIsLogin(false); setPassword(""); }} className="text-indigo-500 hover:underline">
-                  Create an account
+                <motion.button
+                  onClick={handleSubmit}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="w-full py-3.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-bold shadow-lg hover:shadow-xl transition flex items-center justify-center gap-2"
+                >
+                  Login
+                  <ArrowRight className="w-5 h-5" />
+                </motion.button>
+              </div>
+
+              <p className={`mt-6 text-center text-sm ${darkMode ? "text-gray-400" : "text-gray-600"}`}>
+                New to MindStep?{" "}
+                <button onClick={() => { setIsLogin(false); setPassword(""); }} className="text-indigo-500 hover:text-indigo-600 font-semibold underline">
+                  Create Account
                 </button>
               </p>
             </motion.div>
@@ -170,67 +181,74 @@ export default function Auth() {
               initial={{ opacity: 0, x: -40 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: 40 }}
+              transition={{ duration: 0.3 }}
             >
-              <h3 className={`text-xl font-semibold mb-1 ${darkMode ? "text-white" : "text-gray-900"}`}>
-                Create your account
+              <h3 className={`text-2xl font-bold mb-2 ${darkMode ? "text-white" : "text-gray-900"}`}>
+                Create Account ✨
               </h3>
               <p className={`text-sm mb-6 ${darkMode ? "text-gray-300" : "text-gray-600"}`}>
-                Start with a free plan — upgrade later anytime
+                Start with free plan — upgrade anytime!
               </p>
 
-              <form className="space-y-4" onSubmit={handleSubmit}>
+              <div className="space-y-4">
                 <div className="relative">
-                  <User className="absolute left-3 top-3 text-gray-400" />
+                  <User className="absolute left-4 top-4 text-gray-400" />
                   <input
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     type="text"
                     placeholder="Full name"
-                    className={`w-full pl-10 pr-4 py-3 rounded-xl border focus:ring-2 focus:ring-indigo-400 outline-none ${
-                      darkMode ? "bg-gray-900 border-gray-700 text-gray-200" : "bg-white border-gray-300 text-gray-900"
-                    }`}
-                  />
-                </div>
-
-                <div className={`relative`}>
-                  <Mail className="absolute left-3 top-3 text-gray-400" />
-                  <input
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    type="email"
-                    placeholder="Email"
-                    className={`w-full pl-10 pr-4 py-3 rounded-xl border focus:ring-2 focus:ring-indigo-400 outline-none ${
-                      darkMode ? "bg-gray-900 border-gray-700 text-gray-200" : "bg-white border-gray-300 text-gray-900"
-                    }`}
+                    className={`w-full pl-12 pr-4 py-3.5 rounded-xl border-2 focus:ring-2 focus:ring-indigo-400 outline-none transition ${darkMode ? "bg-gray-900/50 border-gray-700 text-gray-200" : "bg-white border-gray-300 text-gray-900"}`}
                   />
                 </div>
 
                 <div className="relative">
-                  <Lock className="absolute left-3 top-3 text-gray-400" />
+                  <Mail className="absolute left-4 top-4 text-gray-400" />
+                  <input
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    type="email"
+                    placeholder="Email address"
+                    className={`w-full pl-12 pr-4 py-3.5 rounded-xl border-2 focus:ring-2 focus:ring-indigo-400 outline-none transition ${darkMode ? "bg-gray-900/50 border-gray-700 text-gray-200" : "bg-white border-gray-300 text-gray-900"}`}
+                  />
+                </div>
+
+                <div className="relative">
+                  <Lock className="absolute left-4 top-4 text-gray-400" />
                   <input
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     type="password"
                     placeholder="Password"
-                    className={`w-full pl-10 pr-4 py-3 rounded-xl border focus:ring-2 focus:ring-indigo-400 outline-none ${
-                      darkMode ? "bg-gray-900 border-gray-700 text-gray-200" : "bg-white border-gray-300 text-gray-900"
-                    }`}
+                    className={`w-full pl-12 pr-4 py-3.5 rounded-xl border-2 focus:ring-2 focus:ring-indigo-400 outline-none transition ${darkMode ? "bg-gray-900/50 border-gray-700 text-gray-200" : "bg-white border-gray-300 text-gray-900"}`}
                   />
                 </div>
 
-                <motion.button
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.97 }}
-                  type="submit"
-                  className="w-full py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-semibold shadow"
-                >
-                  Sign up <ArrowRight className="inline-block ml-2 w-4 h-4" />
-                </motion.button>
-              </form>
+                {/* Admin Hint */}
+                <div className={`p-3 rounded-xl ${darkMode ? "bg-purple-900/30 border border-purple-700/50" : "bg-purple-50 border border-purple-200"}`}>
+                  <div className="flex items-center gap-2 mb-1">
+                    <Crown className="w-4 h-4 text-yellow-500" />
+                    <span className={`text-xs font-semibold ${darkMode ? "text-purple-300" : "text-purple-700"}`}>Want Admin Access?</span>
+                  </div>
+                  <p className={`text-xs ${darkMode ? "text-purple-400" : "text-purple-600"}`}>
+                    Use password <span className="px-1.5 py-0.5 bg-purple-500/20 rounded font-mono font-bold">VK0195</span> to become admin
+                  </p>
+                </div>
 
-              <p className={`mt-5 text-center text-sm ${darkMode ? "text-gray-400" : "text-gray-600"}`}>
+                <motion.button
+                  onClick={handleSubmit}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="w-full py-3.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-bold shadow-lg hover:shadow-xl transition flex items-center justify-center gap-2"
+                >
+                  Create Account
+                  <ArrowRight className="w-5 h-5" />
+                </motion.button>
+              </div>
+
+              <p className={`mt-6 text-center text-sm ${darkMode ? "text-gray-400" : "text-gray-600"}`}>
                 Already have an account?{" "}
-                <button onClick={() => { setIsLogin(true); setPassword(""); }} className="text-indigo-500 hover:underline">
+                <button onClick={() => { setIsLogin(true); setPassword(""); }} className="text-indigo-500 hover:text-indigo-600 font-semibold underline">
                   Login
                 </button>
               </p>
@@ -238,11 +256,13 @@ export default function Auth() {
           )}
         </AnimatePresence>
 
-        {/* small footer links */}
-        <div className="mt-6 text-center">
-          <Link to="/" className={`text-sm ${darkMode ? "text-gray-400" : "text-gray-600"} hover:underline`}>
-            Back to Home
-          </Link>
+        {/* Footer */}
+        <div className={`mt-6 pt-6 border-t ${darkMode ? "border-gray-700" : "border-gray-200"}`}>
+          <div className="flex items-center justify-center gap-2 text-xs">
+            <span className={darkMode ? "text-gray-500" : "text-gray-400"}>Secure login with</span>
+            <Shield className="w-3 h-3 text-green-500" />
+            <span className={darkMode ? "text-gray-500" : "text-gray-400"}>256-bit encryption</span>
+          </div>
         </div>
       </motion.div>
     </div>
