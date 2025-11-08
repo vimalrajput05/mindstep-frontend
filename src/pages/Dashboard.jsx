@@ -292,9 +292,20 @@ export default function Dashboard() {
               </div>
 
               <div className="mt-4 flex gap-3">
-                <button onClick={() => alert("Start test (demo)")} className="flex-1 px-4 py-2 rounded-lg bg-indigo-600 text-white font-semibold">Start Test</button>
-                <button onClick={() => alert("View tests (demo)")} className="px-4 py-2 rounded-lg border">View</button>
-              </div>
+  <button
+    onClick={() => navigate("/skilltest")}
+    className="flex-1 px-4 py-2 rounded-lg bg-indigo-600 text-white font-semibold hover:bg-indigo-700 transition"
+  >
+    Start Test
+  </button>
+  <button
+    onClick={() => navigate("/skilltest")}
+    className="px-4 py-2 rounded-lg border hover:bg-gray-100 dark:hover:bg-gray-800 transition"
+  >
+    View
+  </button>
+</div>
+
             </motion.article>
 
             {/* Psychometric */}
@@ -331,6 +342,10 @@ export default function Dashboard() {
                   </div>
                 ))}
               </div>
+              <button onClick={() => navigate("/psychometric")} className="px-4 ml-70 mt-5 py-2 rounded-lg border hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+  Start
+</button>
+
             </motion.article>
 
             {/* Marksheet OCR */}
