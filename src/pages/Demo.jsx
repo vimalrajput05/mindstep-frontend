@@ -125,8 +125,8 @@ export default function Demo() {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            <ArrowLeft className="w-5 h-5" />
-            <span className="font-medium">Back to Home</span>
+            <ArrowLeft className={`w-5 h-5  ${darkMode ? "text-white" : "text-black"}`} />
+            {/* <span className="font-medium">Back to Home</span> */}
           </motion.button>
 
           <h1 className={`text-xl md:text-2xl font-bold ${darkMode ? "text-white" : "text-gray-900"}`}>
