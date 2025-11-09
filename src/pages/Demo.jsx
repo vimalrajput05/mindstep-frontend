@@ -1,309 +1,462 @@
-// src/pages/Demo.jsx
-import React, { useEffect, useMemo, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import Confetti from "react-confetti";
-import { motion } from "framer-motion";
-import {
-  ArrowLeft,
-  Sun,
-  Moon,
-  CheckCircle,
-  XCircle,
-  Bolt,
-  BookOpen,
-  Code,
-  Database,
-  Briefcase,
-  UserCheck,
-  Tag,
-  X,
-} from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Sun, Moon, ArrowLeft, CheckCircle, Sparkles, Target, Brain, Code, Database } from "lucide-react";
+
+const SKILLS = ["JavaScript", "Python", "React", "Node.js", "SQL", "HTML/CSS", "Java", "C++", "Design", "Data Science"];
+
+const INTERESTS = [
+  { id: "dev", label: "Web Development", icon: Code },
+  { id: "data", label: "Data Science", icon: Database },
+  { id: "design", label: "UI/UX Design", icon: Target },
+  { id: "ai", label: "AI/ML", icon: Brain },
+];
 
 const QUESTIONS = [
-  { id: "q1", text: "I enjoy solving algorithmic puzzles and coding small projects.", weight: "technical" },
-  { id: "q2", text: "I prefer organizing data and drawing insights from numbers.", weight: "analytical" },
-  { id: "q3", text: "I feel energized when working in teams and communicating ideas.", weight: "communication" },
-  { id: "q4", text: "I like designing user-friendly interfaces and thinking about UX.", weight: "design" },
-  { id: "q5", text: "I enjoy building backend systems, databases, and APIs.", weight: "infrastructure" },
+  {
+    id: 1,
+    question: "What type of projects do you enjoy working on?",
+    options: [
+      "Building websites and web apps",
+      "Analyzing data and creating insights",
+      "Designing user interfaces",
+      "Working with AI and machine learning"
+    ]
+  },
+  {
+    id: 2,
+    question: "Which best describes your problem-solving approach?",
+    options: [
+      "Breaking down complex problems into smaller parts",
+      "Using data to find patterns and solutions",
+      "Creating visual solutions that users love",
+      "Experimenting with new technologies"
+    ]
+  },
+  {
+    id: 3,
+    question: "What motivates you the most?",
+    options: [
+      "Building something people can use",
+      "Discovering insights from data",
+      "Creating beautiful experiences",
+      "Solving challenging technical problems"
+    ]
+  }
 ];
-
-const CAREER_MAP = [
-  { id: "data_scientist", title: "Data Scientist", desc: "Works with data, models and analytics to solve problems.", required: ["python", "statistics", "sql", "ml", "visualization"], icon: BookOpen },
-  { id: "frontend_dev", title: "Frontend Developer", desc: "Creates user interfaces, focuses on UX and interactive apps.", required: ["javascript", "react", "html", "css", "design"], icon: Code },
-  { id: "backend_dev", title: "Backend Developer", desc: "Builds servers, APIs and database systems.", required: ["node", "sql", "apis", "database", "security"], icon: Database },
-  { id: "product_manager", title: "Product Manager", desc: "Defines product strategy and coordinates teams.", required: ["communication", "strategy", "analytics", "ux", "team"], icon: Briefcase },
-  { id: "devops_engineer", title: "DevOps / Infra", desc: "Automates deployments, ensures reliability and scale.", required: ["ci/cd", "containers", "cloud", "monitoring", "scripting"], icon: Bolt },
-];
-
-const DEFAULT_SKILLS = ["javascript", "react", "python", "sql", "html", "css", "node", "ml", "design", "cloud"];
-
-function normalizeSkill(s) {
-  return s.trim().toLowerCase().replace(/\s+/g, "_");
-}
 
 export default function Demo() {
-  const navigate = useNavigate();
-  const confettiRef = useRef(null);
+  const [darkMode, setDarkMode] = useState(() => {
+    const saved = localStorage.getItem("darkMode");
+    return saved === "true";
+  });
 
-  // Dark mode
-  const [darkMode, setDarkMode] = useState(() => localStorage.getItem("darkMode") === "true");
+  const [step, setStep] = useState("intro"); // intro, skills, interests, quiz, result
+  const [selectedSkills, setSelectedSkills] = useState([]);
+  const [selectedInterests, setSelectedInterests] = useState([]);
+  const [answers, setAnswers] = useState({});
+  const [showConfetti, setShowConfetti] = useState(false);
 
   useEffect(() => {
-    localStorage.setItem("darkMode", darkMode ? "true" : "false");
-    if (darkMode) document.documentElement.classList.add("dark");
-    else document.documentElement.classList.remove("dark");
+    if (darkMode) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+    localStorage.setItem("darkMode", darkMode.toString());
   }, [darkMode]);
 
-  // Test states
-  const [answers, setAnswers] = useState({});
-  const [selectedSkills, setSelectedSkills] = useState(new Set(["javascript", "react"]));
-  const [manualSkill, setManualSkill] = useState("");
-  const [started, setStarted] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
-  const [showDetails, setShowDetails] = useState(false);
-
-  const answeredCount = Object.keys(answers).length;
-  const totalQuestions = QUESTIONS.length;
-  const progressPct = Math.round((answeredCount / totalQuestions) * 100);
-
-  const toggleSkill = (s) => {
-    const n = normalizeSkill(s);
-    setSelectedSkills((prev) => {
-      const next = new Set(prev);
-      next.has(n) ? next.delete(n) : next.add(n);
-      return next;
-    });
+  const toggleSkill = (skill) => {
+    setSelectedSkills(prev => 
+      prev.includes(skill) 
+        ? prev.filter(s => s !== skill)
+        : [...prev, skill]
+    );
   };
 
-  const addManualSkill = () => {
-    const v = normalizeSkill(manualSkill);
-    if (!v) return;
-    setSelectedSkills((prev) => new Set(prev).add(v));
-    setManualSkill("");
+  const toggleInterest = (id) => {
+    setSelectedInterests(prev => 
+      prev.includes(id) 
+        ? prev.filter(i => i !== id)
+        : [...prev, id]
+    );
   };
 
-  const removeSkill = (s) => {
-    setSelectedSkills((prev) => {
-      const next = new Set(prev);
-      next.delete(s);
-      return next;
-    });
+  const handleAnswer = (questionId, answerIndex) => {
+    setAnswers(prev => ({ ...prev, [questionId]: answerIndex }));
   };
 
-  const score = useMemo(() => {
-    const categoryTotals = {};
-    const categoryCounts = {};
-    QUESTIONS.forEach((q) => {
-      const val = answers[q.id] ?? 0;
-      categoryTotals[q.weight] = (categoryTotals[q.weight] || 0) + val;
-      categoryCounts[q.weight] = (categoryCounts[q.weight] || 0) + 1;
-    });
-    const catScores = {};
-    Object.keys(categoryTotals).forEach((k) => {
-      catScores[k] = Math.round((categoryTotals[k] / (categoryCounts[k] * 5)) * 100 || 0);
-    });
-    const sum = Object.values(answers).reduce((a, b) => a + b, 0);
-    const overall = Math.round((sum / (totalQuestions * 5)) * 100 || 0);
-    return { catScores, overall };
-  }, [answers]);
-
-  const careerMatches = useMemo(() => {
-    const skills = Array.from(selectedSkills);
-    return CAREER_MAP.map((c) => {
-      const overlap = c.required.filter((r) => skills.includes(r)).length;
-      const score = Math.round((overlap / c.required.length) * 100);
-      return { ...c, matchPercent: score, overlap };
-    }).sort((a, b) => b.matchPercent - a.matchPercent);
-  }, [selectedSkills]);
-
-  const topCareer = careerMatches[0];
-  const finalGood = submitted && (topCareer?.matchPercent >= 60 || score.overall >= 60);
-
-  const handleSubmit = () => {
-    if (answeredCount < 2) {
-      alert("Please answer at least 2 questions!");
-      return;
-    }
-    setSubmitted(true);
-    setStarted(false);
-    setTimeout(() => document.getElementById("demo-results")?.scrollIntoView({ behavior: "smooth" }), 300);
+  const calculateResult = () => {
+    const score = Object.keys(answers).length;
+    const skillScore = selectedSkills.length;
+    const interestScore = selectedInterests.length;
+    
+    const totalScore = ((score / QUESTIONS.length) + (skillScore / 5) + (interestScore / 2)) / 3 * 100;
+    
+    if (totalScore >= 70) return { level: "Excellent Match!", color: "from-green-500 to-emerald-500", career: "Full Stack Developer" };
+    if (totalScore >= 50) return { level: "Good Match!", color: "from-blue-500 to-cyan-500", career: "Frontend Developer" };
+    return { level: "Keep Learning!", color: "from-yellow-500 to-orange-500", career: "Junior Developer" };
   };
 
-  const handleReset = () => {
+  const goToResult = () => {
+    setStep("result");
+    setShowConfetti(true);
+    setTimeout(() => setShowConfetti(false), 3000);
+  };
+
+  const reset = () => {
+    setStep("intro");
+    setSelectedSkills([]);
+    setSelectedInterests([]);
     setAnswers({});
-    setSubmitted(false);
-    setStarted(false);
-    setSelectedSkills(new Set(["javascript", "react"]));
+    setShowConfetti(false);
   };
 
-  const [winConfetti, setWinConfetti] = useState(false);
-  useEffect(() => {
-    if (submitted && finalGood) {
-      setWinConfetti(true);
-      setTimeout(() => setWinConfetti(false), 6000);
-    }
-  }, [submitted, finalGood]);
-
-  const radioOptions = [
-    { label: "Strongly Disagree", value: 1 },
-    { label: "Disagree", value: 2 },
-    { label: "Neutral", value: 3 },
-    { label: "Agree", value: 4 },
-    { label: "Strongly Agree", value: 5 },
-  ];
+  const currentQuestion = QUESTIONS.find(q => !answers[q.id]);
+  const allQuestionsAnswered = Object.keys(answers).length === QUESTIONS.length;
 
   return (
-    <div className={`${darkMode ? "dark" : ""} min-h-screen bg-slate-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100`}>
-      {winConfetti && <Confetti recycle={false} numberOfPieces={200} />}
-
-      {/* Topbar */}
-      <header className="sticky top-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur border-b border-gray-200 dark:border-gray-800">
-        <div className="max-w-6xl mx-auto px-4 flex items-center justify-between py-3">
-          <button onClick={() => navigate("/")} title="Back to Home" className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+    <div className={`min-h-screen transition-colors duration-300 ${darkMode ? "dark bg-gray-950" : "bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50"}`}>
+      {/* Header */}
+      <header className={`sticky top-0 z-50 backdrop-blur-md ${darkMode ? "bg-gray-900/80 border-b border-gray-800" : "bg-white/80 border-b border-gray-200"}`}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
+          <motion.button
+            onClick={() => window.location.href = "/"}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg ${darkMode ? "hover:bg-gray-800" : "hover:bg-gray-100"} transition`}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
             <ArrowLeft className="w-5 h-5" />
-          </button>
+            <span className="font-medium">Back to Home</span>
+          </motion.button>
 
-          <div className="text-lg font-bold">Skill Match Test</div>
+          <h1 className={`text-xl md:text-2xl font-bold ${darkMode ? "text-white" : "text-gray-900"}`}>
+            Career Match Demo
+          </h1>
 
-          <button onClick={() => setDarkMode((s) => !s)} className="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700">
-            {darkMode ? <Sun className="w-5 h-5 text-yellow-400" /> : <Moon className="w-5 h-5" />}
-          </button>
+          <motion.button
+            onClick={() => setDarkMode(!darkMode)}
+            className={`p-3 rounded-lg ${darkMode ? "bg-gray-800 text-yellow-400" : "bg-gray-100 text-gray-700"} transition`}
+            whileHover={{ scale: 1.1, rotate: 15 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+          </motion.button>
         </div>
       </header>
 
-      {/* Main content */}
-      <main className="max-w-6xl mx-auto px-4 py-8">
-        <div className="grid lg:grid-cols-12 gap-8">
-          <section className="lg:col-span-7 space-y-6">
-            {/* Test section */}
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="p-6 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 shadow">
-              {!started && !submitted && (
-                <div className="space-y-4 text-center">
-                  <h2 className="text-2xl font-bold">Quick Skill Assessment</h2>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Take a small quiz and add your skills to see your best-fit career path.</p>
-                  <div className="flex justify-center gap-4 flex-wrap">
-                    <button onClick={() => setStarted(true)} className="px-5 py-3 bg-indigo-600 text-white rounded-lg shadow-md hover:scale-105 transition">Start Test</button>
-                    <button onClick={() => setSubmitted(true)} className="px-5 py-3 border rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">Quick Demo</button>
-                  </div>
-                </div>
-              )}
+      {/* Main Content */}
+      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <AnimatePresence mode="wait">
+          {/* Intro Screen */}
+          {step === "intro" && (
+            <motion.div
+              key="intro"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className={`p-8 md:p-12 rounded-3xl ${darkMode ? "bg-gray-900 border border-gray-800" : "bg-white shadow-xl"} text-center`}
+            >
+              <motion.div
+                animate={{ rotate: [0, 10, -10, 0] }}
+                transition={{ duration: 2, repeat: Infinity }}
+                className="inline-block mb-6"
+              >
+                <Sparkles className={`w-16 h-16 ${darkMode ? "text-indigo-400" : "text-indigo-600"}`} />
+              </motion.div>
+              
+              <h2 className={`text-3xl md:text-4xl font-bold mb-4 ${darkMode ? "text-white" : "text-gray-900"}`}>
+                Welcome to Career Match Demo!
+              </h2>
+              
+              <p className={`text-lg mb-8 ${darkMode ? "text-gray-400" : "text-gray-600"} max-w-2xl mx-auto`}>
+                Discover your perfect career path in 3 simple steps. Select your skills, choose your interests, and answer a few questions to get personalized recommendations.
+              </p>
 
-              {started && !submitted && (
-                <div className="space-y-5">
-                  <div className="flex justify-between items-center">
-                    <div>{answeredCount}/{totalQuestions} answered</div>
-                    <div>{progressPct}%</div>
-                  </div>
-                  <div className="h-2 bg-gray-200 dark:bg-gray-800 rounded-full overflow-hidden">
-                    <div className="h-full bg-indigo-600" style={{ width: `${progressPct}%` }} />
-                  </div>
-
-                  {QUESTIONS.map((q) => (
-                    <div key={q.id} className="p-4 rounded-lg border dark:border-gray-800 bg-gray-50 dark:bg-gray-900/40">
-                      <div className="font-medium">{q.text}</div>
-                      <div className="mt-3 grid grid-cols-5 gap-2">
-                        {radioOptions.map((opt) => {
-                          const checked = (answers[q.id] ?? 0) === opt.value;
-                          return (
-                            <button
-                              key={opt.value}
-                              onClick={() => setAnswers((prev) => ({ ...prev, [q.id]: opt.value }))}
-                              className={`py-2 rounded-lg text-xs font-medium border ${checked ? "bg-indigo-600 text-white border-indigo-600" : "bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700"}`}
-                            >
-                              {opt.label.split(" ")[0]}
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  ))}
-
-                  <div className="flex gap-3">
-                    <button onClick={handleSubmit} className="px-6 py-3 bg-indigo-600 text-white rounded-lg shadow-md">Submit</button>
-                    <button onClick={handleReset} className="px-4 py-3 border rounded-lg">Reset</button>
-                  </div>
-                </div>
-              )}
+              <motion.button
+                onClick={() => setStep("skills")}
+                className="px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-semibold text-lg shadow-lg"
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                Start Your Journey 🚀
+              </motion.button>
             </motion.div>
+          )}
 
-            {/* Skill Section */}
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="p-6 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 shadow">
-              <h3 className="text-lg font-bold">Your Skills</h3>
-              <div className="mt-4 flex flex-wrap gap-2">
-                {DEFAULT_SKILLS.map((s) => {
-                  const active = selectedSkills.has(normalizeSkill(s));
+          {/* Skills Selection */}
+          {step === "skills" && (
+            <motion.div
+              key="skills"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              className={`p-8 rounded-3xl ${darkMode ? "bg-gray-900 border border-gray-800" : "bg-white shadow-xl"}`}
+            >
+              <h2 className={`text-2xl md:text-3xl font-bold mb-2 ${darkMode ? "text-white" : "text-gray-900"}`}>
+                Select Your Skills
+              </h2>
+              <p className={`mb-6 ${darkMode ? "text-gray-400" : "text-gray-600"}`}>
+                Choose at least 2 skills you're comfortable with
+              </p>
+
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-8">
+                {SKILLS.map((skill) => (
+                  <motion.button
+                    key={skill}
+                    onClick={() => toggleSkill(skill)}
+                    className={`p-4 rounded-xl font-medium transition ${
+                      selectedSkills.includes(skill)
+                        ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg"
+                        : darkMode
+                        ? "bg-gray-800 text-gray-300 border border-gray-700 hover:bg-gray-750"
+                        : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                    }`}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    {skill}
+                    {selectedSkills.includes(skill) && (
+                      <CheckCircle className="w-4 h-4 inline ml-2" />
+                    )}
+                  </motion.button>
+                ))}
+              </div>
+
+              <div className="flex gap-3 justify-end">
+                <button
+                  onClick={() => setStep("intro")}
+                  className={`px-6 py-3 rounded-xl ${darkMode ? "bg-gray-800 text-gray-300" : "bg-gray-200 text-gray-700"}`}
+                >
+                  Back
+                </button>
+                <button
+                  onClick={() => setStep("interests")}
+                  disabled={selectedSkills.length < 2}
+                  className={`px-6 py-3 rounded-xl font-semibold ${
+                    selectedSkills.length >= 2
+                      ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white"
+                      : "bg-gray-400 text-gray-200 cursor-not-allowed"
+                  }`}
+                >
+                  Next ({selectedSkills.length}/2)
+                </button>
+              </div>
+            </motion.div>
+          )}
+
+          {/* Interests Selection */}
+          {step === "interests" && (
+            <motion.div
+              key="interests"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              className={`p-8 rounded-3xl ${darkMode ? "bg-gray-900 border border-gray-800" : "bg-white shadow-xl"}`}
+            >
+              <h2 className={`text-2xl md:text-3xl font-bold mb-2 ${darkMode ? "text-white" : "text-gray-900"}`}>
+                Choose Your Interests
+              </h2>
+              <p className={`mb-6 ${darkMode ? "text-gray-400" : "text-gray-600"}`}>
+                Select at least 1 area that excites you
+              </p>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                {INTERESTS.map((interest) => {
+                  const Icon = interest.icon;
                   return (
-                    <button
-                      key={s}
-                      onClick={() => toggleSkill(s)}
-                      className={`px-3 py-1 rounded-full border flex items-center gap-2 text-sm ${active ? "bg-indigo-600 text-white border-indigo-600" : "bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700"}`}
+                    <motion.button
+                      key={interest.id}
+                      onClick={() => toggleInterest(interest.id)}
+                      className={`p-6 rounded-xl text-left transition ${
+                        selectedInterests.includes(interest.id)
+                          ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg"
+                          : darkMode
+                          ? "bg-gray-800 text-gray-300 border border-gray-700 hover:bg-gray-750"
+                          : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                      }`}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
                     >
-                      <Tag className="w-4 h-4" /> {s}
-                    </button>
+                      <Icon className="w-8 h-8 mb-3" />
+                      <div className="font-semibold text-lg">{interest.label}</div>
+                    </motion.button>
                   );
                 })}
               </div>
 
-              <div className="mt-4 flex gap-3">
-                <input
-                  value={manualSkill}
-                  onChange={(e) => setManualSkill(e.target.value)}
-                  placeholder="Add a skill"
-                  className="flex-1 px-4 py-2 border rounded-lg dark:border-gray-700 bg-white dark:bg-gray-800"
-                />
-                <button onClick={addManualSkill} className="px-4 py-2 bg-indigo-600 text-white rounded-lg">Add</button>
+              <div className="flex gap-3 justify-end">
+                <button
+                  onClick={() => setStep("skills")}
+                  className={`px-6 py-3 rounded-xl ${darkMode ? "bg-gray-800 text-gray-300" : "bg-gray-200 text-gray-700"}`}
+                >
+                  Back
+                </button>
+                <button
+                  onClick={() => setStep("quiz")}
+                  disabled={selectedInterests.length < 1}
+                  className={`px-6 py-3 rounded-xl font-semibold ${
+                    selectedInterests.length >= 1
+                      ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white"
+                      : "bg-gray-400 text-gray-200 cursor-not-allowed"
+                  }`}
+                >
+                  Next ({selectedInterests.length}/1)
+                </button>
+              </div>
+            </motion.div>
+          )}
+
+          {/* Quiz */}
+          {step === "quiz" && currentQuestion && (
+            <motion.div
+              key={`quiz-${currentQuestion.id}`}
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              className={`p-8 rounded-3xl ${darkMode ? "bg-gray-900 border border-gray-800" : "bg-white shadow-xl"}`}
+            >
+              <div className="mb-6">
+                <div className={`text-sm mb-2 ${darkMode ? "text-gray-400" : "text-gray-600"}`}>
+                  Question {Object.keys(answers).length + 1} of {QUESTIONS.length}
+                </div>
+                <div className="w-full bg-gray-200 dark:bg-gray-800 rounded-full h-2">
+                  <motion.div
+                    className="h-full bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full"
+                    initial={{ width: 0 }}
+                    animate={{ width: `${(Object.keys(answers).length / QUESTIONS.length) * 100}%` }}
+                  />
+                </div>
               </div>
 
-              <div className="mt-4 flex flex-wrap gap-2">
-                {Array.from(selectedSkills).map((s) => (
-                  <span key={s} className="px-3 py-1 bg-gray-100 dark:bg-gray-800 border rounded-full flex items-center gap-2 text-sm">
-                    {s} <button onClick={() => removeSkill(s)}><X className="w-3 h-3" /></button>
-                  </span>
+              <h3 className={`text-xl md:text-2xl font-bold mb-6 ${darkMode ? "text-white" : "text-gray-900"}`}>
+                {currentQuestion.question}
+              </h3>
+
+              <div className="space-y-3">
+                {currentQuestion.options.map((option, idx) => (
+                  <motion.button
+                    key={idx}
+                    onClick={() => {
+                      handleAnswer(currentQuestion.id, idx);
+                      if (Object.keys(answers).length + 1 === QUESTIONS.length) {
+                        setTimeout(() => goToResult(), 300);
+                      }
+                    }}
+                    className={`w-full p-4 rounded-xl text-left font-medium transition ${
+                      darkMode
+                        ? "bg-gray-800 text-gray-300 border border-gray-700 hover:bg-gray-750"
+                        : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                    }`}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    {option}
+                  </motion.button>
                 ))}
               </div>
             </motion.div>
-          </section>
+          )}
 
-          {/* Result Section */}
-          <aside className="lg:col-span-5">
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="p-6 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 shadow sticky top-24">
-              <h3 className="text-lg font-bold mb-3">Career Matches</h3>
-              {careerMatches.slice(0, 3).map((c) => {
-                const Icon = c.icon;
-                return (
-                  <div key={c.id} className="p-3 mb-3 rounded-lg border dark:border-gray-800 bg-gray-50 dark:bg-gray-900/40 flex items-center gap-3">
-                    <div className="w-12 h-12 bg-indigo-600 text-white rounded-lg flex items-center justify-center">
-                      <Icon className="w-5 h-5" />
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex justify-between">
-                        <div className="font-semibold">{c.title}</div>
-                        <div className="text-sm">{c.matchPercent}%</div>
-                      </div>
-                      <div className="text-xs text-gray-500">{c.desc}</div>
-                    </div>
-                  </div>
-                );
-              })}
-
-              {submitted && (
-                <div id="demo-results" className="mt-6 p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
-                  <div className="font-semibold text-green-700 dark:text-green-300">🎉 {finalGood ? "Great Match!" : "Needs improvement"}</div>
-                  <div className="text-sm mt-2">Suggested: {topCareer?.title}</div>
-                  <div className="flex gap-2 mt-4">
-                    <button onClick={() => navigate("/")} className="px-4 py-2 bg-indigo-600 text-white rounded-lg">Back to Home</button>
-                    <button onClick={handleReset} className="px-4 py-2 border rounded-lg">Try Again</button>
-                  </div>
+          {/* Result */}
+          {step === "result" && (
+            <motion.div
+              key="result"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              className={`p-8 md:p-12 rounded-3xl ${darkMode ? "bg-gray-900 border border-gray-800" : "bg-white shadow-xl"} text-center relative overflow-hidden`}
+            >
+              {showConfetti && (
+                <div className="absolute inset-0 pointer-events-none">
+                  {[...Array(50)].map((_, i) => (
+                    <motion.div
+                      key={i}
+                      className="absolute w-2 h-2 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full"
+                      initial={{ 
+                        x: Math.random() * window.innerWidth, 
+                        y: -20,
+                        opacity: 1 
+                      }}
+                      animate={{ 
+                        y: window.innerHeight + 20,
+                        opacity: 0,
+                        rotate: 360
+                      }}
+                      transition={{ 
+                        duration: 2 + Math.random() * 2,
+                        delay: Math.random() * 0.5 
+                      }}
+                    />
+                  ))}
                 </div>
               )}
-            </motion.div>
-          </aside>
-        </div>
-      </main>
 
-      <footer className="text-center py-6 text-xs text-gray-500 dark:text-gray-400">
-        © 2025 Skill Analyzer — Dark Mode Supported
-      </footer>
+              <motion.div
+                animate={{ scale: [1, 1.1, 1] }}
+                transition={{ duration: 1, repeat: 2 }}
+              >
+                <div className={`w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-r ${calculateResult().color} flex items-center justify-center`}>
+                  <Sparkles className="w-10 h-10 text-white" />
+                </div>
+              </motion.div>
+
+              <h2 className={`text-3xl md:text-4xl font-bold mb-4 ${darkMode ? "text-white" : "text-gray-900"}`}>
+                Congratulations! 🎉
+              </h2>
+
+              <div className={`text-2xl font-bold mb-2 bg-gradient-to-r ${calculateResult().color} bg-clip-text text-transparent`}>
+                {calculateResult().level}
+              </div>
+
+              <p className={`text-lg mb-8 ${darkMode ? "text-gray-400" : "text-gray-600"}`}>
+                Based on your skills and interests, we recommend: <br />
+                <span className="font-bold text-indigo-600 dark:text-indigo-400 text-xl">
+                  {calculateResult().career}
+                </span>
+              </p>
+
+              <div className={`p-6 rounded-xl mb-8 ${darkMode ? "bg-gray-800" : "bg-gray-100"} text-left`}>
+                <h3 className={`font-bold mb-3 ${darkMode ? "text-white" : "text-gray-900"}`}>Your Profile:</h3>
+                <div className="space-y-2 text-sm">
+                  <div>
+                    <span className={darkMode ? "text-gray-400" : "text-gray-600"}>Skills:</span>{" "}
+                    <span className="font-medium text-green-600">{selectedSkills.join(", ")}</span>
+                  </div>
+                  <div>
+                    <span className={darkMode ? "text-gray-400" : "text-gray-600"}>Interests:</span>{" "}
+                    <span className="font-medium text-green-600">
+                      {selectedInterests.map(id => INTERESTS.find(i => i.id === id)?.label).join(", ")}
+                    </span>
+                  </div>
+                  <div>
+                    <span className={darkMode ? "text-gray-400" : "text-gray-600"}>Questions Answered:</span>{" "}
+                    <span className="font-medium text-green-600">{Object.keys(answers).length}/{QUESTIONS.length}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                <motion.button
+                  onClick={() => window.location.href = "/"}
+                  className="px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-semibold shadow-lg"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  Go to Home
+                </motion.button>
+                <motion.button
+                  onClick={reset}
+                  className={`px-8 py-4 rounded-xl font-semibold ${darkMode ? "bg-gray-800 text-gray-300" : "bg-gray-200 text-gray-700"}`}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  Try Again
+                </motion.button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </main>
     </div>
   );
 }

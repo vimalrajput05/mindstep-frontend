@@ -6,6 +6,8 @@ import Dashboard from "./pages/Dashboard";
 import SkillTest from "./pages/SkillTest"; // ← Added
 import PsychometricTest from "./pages/PsychometricTest";
 import Demo from "./pages/Demo";
+import Profile from "./pages/Profile";
+import SkillManager from "./pages/SkillManager";
 
 export default function App() {
   return (
@@ -17,6 +19,8 @@ export default function App() {
         <Route path="/skilltest" element={<SkillTest />} /> {/* ← Added */}
         <Route path="/psychometric" element={<PsychometricTest />} />
         <Route path="/demo" element={<Demo />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/skills" element={<SkillManager />} />
 
 
       </Routes>

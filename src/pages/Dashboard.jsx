@@ -4,27 +4,12 @@ import { useNavigate, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Sparkles, Crown, Lock, LogOut, Target, CheckCircle, Star, Gift, ShieldCheck,
-  BookOpen, Users, Briefcase, TrendingUp, Sun, Moon, Activity, DownloadCloud, X
+  BookOpen, Users, Briefcase, TrendingUp, Sun, Moon, Activity, DownloadCloud, X, User
 } from "lucide-react";
-
-/**
- * Dashboard.jsx
- * - Single-file interactive dashboard (demo / drop-in)
- * - Dark mode, role-aware (admin), premium-lock overlays
- * - Framer Motion animations + responsive Tailwind layout
- *
- * Usage:
- * - Keep in routes: <Route path="/dashboard" element={<Dashboard />} />
- * - Fake login example:
- *    localStorage.setItem('user', JSON.stringify({ name: 'Rahul', email: 'r@ex.com', plan: 'free', role: 'user', loggedAt: Date.now() }))
- *
- * Replace mock data / handlers with real API calls later.
- */
 
 export default function Dashboard() {
   const navigate = useNavigate();
 
-  // Load user from localStorage (fake auth)
   const [user, setUser] = useState(() => {
     try {
       const raw = localStorage.getItem("user");
@@ -35,36 +20,63 @@ export default function Dashboard() {
     }
   });
 
-  // Dark mode state (persist in localStorage)
   const [darkMode, setDarkMode] = useState(() => {
     return localStorage.getItem("darkMode") === "true";
   });
 
-  // Local UI states
+  // Load profile data
+  const [profileData, setProfileData] = useState(() => {
+    const saved = localStorage.getItem("userProfile");
+    return saved ? JSON.parse(saved) : {
+      name: user?.name || "",
+      gender: "",
+      avatar: "boy1",
+    };
+  });
+
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [busy, setBusy] = useState(false);
 
-  // Sync dark mode to root class & localStorage
   useEffect(() => {
     if (darkMode) document.documentElement.classList.add("dark");
     else document.documentElement.classList.remove("dark");
     localStorage.setItem("darkMode", darkMode ? "true" : "false");
   }, [darkMode]);
 
-  // If not logged, redirect to auth page
   useEffect(() => {
     if (!user) {
       navigate("/auth");
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
+  }, [user, navigate]);
 
-  // Helpers
+  // Reload profile data when returning to dashboard
+  useEffect(() => {
+    const handleStorageChange = () => {
+      const saved = localStorage.getItem("userProfile");
+      if (saved) {
+        setProfileData(JSON.parse(saved));
+      }
+    };
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
+  }, []);
+
   const displayUser = user ?? { name: "Guest", email: "", plan: "free", role: "user" };
   const isAdmin = displayUser.role === "admin" || displayUser.plan === "admin";
   const isPremium = displayUser.plan === "premium" || isAdmin;
 
-  // ---------- MOCKED DATA ----------
+  // Avatar emoji map
+  const avatarEmojis = {
+    boy1: "👦",
+    boy2: "🧑",
+    boy3: "👨",
+    boy4: "👨‍🎓",
+    girl1: "👧",
+    girl2: "👩",
+    girl3: "🧕",
+    girl4: "👩‍🎓",
+  };
+
   const stats = {
     progressPercent: 45,
     testsTaken: 2,
@@ -114,7 +126,6 @@ export default function Dashboard() {
     { title: "Junior ML Engineer - Startup", location: "Hyderabad", salary: "6-10 LPA" },
   ];
 
-  // ---------- UI COMPONENTS ----------
   const ProgressBar = ({ value = 0, h = 8 }) => (
     <div className={`w-full bg-gray-200 dark:bg-gray-800 rounded-full h-${h} overflow-hidden`}>
       <motion.div
@@ -141,18 +152,15 @@ export default function Dashboard() {
     </motion.div>
   );
 
-  // ---------- ACTIONS ----------
   const logout = () => {
     localStorage.removeItem("user");
     setUser(null);
     navigate("/auth");
   };
 
-  // Fake upgrade flow (demo)
   const upgradeToPremium = async () => {
     if (!user) return;
     setBusy(true);
-    // simulate payment delay
     await new Promise((r) => setTimeout(r, 900));
     const upgraded = { ...user, plan: "premium", upgradedAt: Date.now() };
     localStorage.setItem("user", JSON.stringify(upgraded));
@@ -161,16 +169,8 @@ export default function Dashboard() {
     setShowUpgradeModal(false);
   };
 
-  // "Admin reveal" utility: if admin wants to view as a student, we can simulate.
-  const [viewAs, setViewAs] = useState("self"); // self | student
-  useEffect(() => {
-    // keep viewAs in session only
-  }, [viewAs]);
-
-  // ---------- ANIMATIONS ----------
   const fadeIn = { hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0, transition: { duration: 0.45 } } };
 
-  // ---------- RENDER ----------
   return (
     <div className={`min-h-screen transition-colors duration-300 ${darkMode ? "bg-gray-950 text-gray-100" : "bg-slate-50 text-gray-900"}`}>
       {/* NAV */}
@@ -187,11 +187,29 @@ export default function Dashboard() {
           </div>
 
           <div className="flex items-center gap-3">
-            {/* quick identity & plan */}
-            <div className="hidden sm:flex sm:flex-col text-right mr-3">
-              <div className="text-sm font-medium">{displayUser.name || displayUser.email || "Guest"}</div>
-              <div className="text-xs text-gray-500 dark:text-gray-400">{displayUser.email || "—"}</div>
-            </div>
+            {/* Profile Icon with Avatar */}
+            <Link to="/profile">
+              <motion.div
+                className={`relative cursor-pointer ${darkMode ? "hover:bg-gray-800" : "hover:bg-gray-100"} rounded-full p-1 transition group`}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center text-xl font-bold ${
+                  profileData.gender === "male"
+                    ? "bg-gradient-to-br from-blue-500 to-cyan-500"
+                    : profileData.gender === "female"
+                    ? "bg-gradient-to-br from-pink-500 to-rose-500"
+                    : "bg-gradient-to-br from-gray-500 to-gray-600"
+                } shadow-lg`}>
+                  {avatarEmojis[profileData.avatar] || "👤"}
+                </div>
+                {/* Hover tooltip */}
+                <div className={`absolute top-full right-0 mt-2 px-3 py-2 rounded-lg ${darkMode ? "bg-gray-800 border border-gray-700" : "bg-white border border-gray-200"} shadow-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap`}>
+                  <div className="text-sm font-medium">{profileData.name || "Guest"}</div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400">Click to edit profile</div>
+                </div>
+              </motion.div>
+            </Link>
 
             <button
               onClick={() => setDarkMode(!darkMode)}
@@ -202,7 +220,7 @@ export default function Dashboard() {
               {darkMode ? <Sun className="w-5 h-5 text-yellow-400" /> : <Moon className="w-5 h-5" />}
             </button>
 
-            <div className={`px-3 py-1 rounded-lg text-sm font-semibold ${isPremium ? "bg-yellow-400 text-gray-900" : "bg-indigo-50 text-indigo-700"}`}>
+            <div className={`px-3 py-1 rounded-lg text-sm font-semibold ${isPremium ? "bg-yellow-400 text-gray-900" : "bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300"}`}>
               {isAdmin ? "Admin" : isPremium ? "Premium" : "Free"}
             </div>
 
@@ -224,7 +242,9 @@ export default function Dashboard() {
           <motion.section variants={fadeIn} className={`p-6 rounded-2xl ${darkMode ? "bg-gray-900/60 border-gray-800" : "bg-white border-gray-200"} border shadow-lg`}>
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
               <div>
-                <h1 className="text-2xl md:text-3xl font-bold">Welcome back, <span className="text-indigo-500">{displayUser.name || "Learner"}</span> 👋</h1>
+                <h1 className="text-2xl md:text-3xl font-bold">
+                  Welcome back, <span className="text-indigo-500">{profileData.name || displayUser.name || "Learner"}</span> 👋
+                </h1>
                 <p className="text-sm mt-1 text-gray-500 dark:text-gray-400">Track progress, run tests, and follow a personalized career roadmap.</p>
                 <div className="mt-4 max-w-xl">
                   <ProgressBar value={stats.progressPercent} h={3} />
@@ -292,20 +312,21 @@ export default function Dashboard() {
               </div>
 
               <div className="mt-4 flex gap-3">
-  <button
-    onClick={() => navigate("/skilltest")}
-    className="flex-1 px-4 py-2 rounded-lg bg-indigo-600 text-white font-semibold hover:bg-indigo-700 transition"
-  >
-    Start Test
-  </button>
-  <button
-    onClick={() => navigate("/skilltest")}
-    className="px-4 py-2 rounded-lg border hover:bg-gray-100 dark:hover:bg-gray-800 transition"
-  >
-    View
-  </button>
-</div>
-
+                <button
+                  onClick={() => navigate("/skilltest")}
+                  className="flex-1 px-4 py-2 rounded-lg bg-indigo-600 text-white font-semibold hover:bg-indigo-700 transition"
+                >
+                  Start Test
+                </button>
+                <Link to="/skills">
+                <button
+                  onClick={() => navigate("/skills")}
+                  className="px-4 py-2 rounded-lg border hover:bg-gray-100 dark:hover:bg-gray-800 transition"
+                >
+                  View
+                </button>
+                </Link>
+              </div>
             </motion.article>
 
             {/* Psychometric */}
@@ -342,10 +363,11 @@ export default function Dashboard() {
                   </div>
                 ))}
               </div>
-              <button onClick={() => navigate("/psychometric")} className="px-4 ml-70 mt-5 py-2 rounded-lg border hover:bg-gray-100 dark:hover:bg-gray-800 transition">
-  Start
-</button>
-
+              <button onClick={() => navigate("/psychometric")} className="w-full mt-5 py-2 rounded-lg  font-semibold hover:bg-indigo-700 
+              bg-indigo-600
+              text-white transition">
+                Start Test
+              </button>
             </motion.article>
 
             {/* Marksheet OCR */}
@@ -379,7 +401,7 @@ export default function Dashboard() {
             </motion.article>
           </motion.section>
 
-          {/* PREMIUM: Roadmap & Learning (locked for non-premium) */}
+          {/* PREMIUM: Roadmap & Learning */}
           <motion.section variants={fadeIn} className="grid lg:grid-cols-2 gap-6">
             <motion.div className={`p-6 rounded-2xl ${darkMode ? "bg-gray-900/60 border-gray-800" : "bg-white border-gray-200"} border shadow-lg relative`}>
               <div className="flex items-center justify-between mb-4">
@@ -402,9 +424,8 @@ export default function Dashboard() {
                 ))}
               </div>
 
-              {/* LOCK overlay for non-premium & non-admin */}
-              <AnimatePresence>
-                {!isPremium && !isAdmin && (
+              {!isPremium && !isAdmin && (
+                <AnimatePresence>
                   <motion.div initial={{ opacity: 0 }} animate={{ opacity: 0.95 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-black/60 rounded-2xl flex items-center justify-center z-20">
                     <div className="text-center text-white p-6">
                       <Lock className="mx-auto mb-3 w-10 h-10" />
@@ -416,8 +437,8 @@ export default function Dashboard() {
                       </div>
                     </div>
                   </motion.div>
-                )}
-              </AnimatePresence>
+                </AnimatePresence>
+              )}
             </motion.div>
 
             <motion.div className={`p-6 rounded-2xl ${darkMode ? "bg-gray-900/60 border-gray-800" : "bg-white border-gray-200"} border shadow-lg`}>
@@ -443,10 +464,10 @@ export default function Dashboard() {
               <div>
                 <h4 className="font-semibold mb-2">AI Mentor (Demo)</h4>
                 <div className="p-3 rounded-lg bg-gray-50 dark:bg-gray-900/40 mb-3">
-                  <div className="text-sm text-gray-600">AI Mentor: "Try asking 'What should I learn next for Data Science?'"</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400">AI Mentor: "Try asking 'What should I learn next for Data Science?'"</div>
                 </div>
                 <div className="flex gap-2">
-                  <input placeholder="Ask a question (demo)" className="flex-1 px-3 py-2 rounded-lg border dark:border-gray-700 bg-white dark:bg-gray-900/60" />
+                  <input placeholder="Ask a question (demo)" className="flex-1 px-3 py-2 rounded-lg border dark:border-gray-700 bg-white dark:bg-gray-900/60 text-gray-900 dark:text-gray-100" />
                   <button onClick={() => alert("AI reply (demo)")} className="px-4 py-2 bg-indigo-600 text-white rounded-lg">Send</button>
                 </div>
               </div>
@@ -544,10 +565,3 @@ export default function Dashboard() {
     </div>
   );
 }
-
-/* -------------- Notes --------------
-- Replace alerts with proper modals / API calls.
-- Use real payment integration (Razorpay / Stripe) in upgradeToPremium.
-- Connect to backend for real user/session storage and secure routes.
-- This single-file is intentionally self-contained for quick copy-paste.
-------------------------------------- */
