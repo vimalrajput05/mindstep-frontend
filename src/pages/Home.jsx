@@ -426,31 +426,31 @@ export default function Home() {
               icon: Upload,
               title: "Marksheet Scan",
               desc: "Upload your 10th/12th marksheet, OCR technology automatically analyzes subjects and identifies your strengths.",
-              gradient: "from-purple-500 to-pink-500",
+              gradient: "from-indigo-500 to-purple-500",
             },
             {
               icon: Target,
               title: "Skill Verification",
               desc: "Verify your skills through mini-quizzes. Get real assessments instead of self-reporting.",
-              gradient: "from-pink-500 to-rose-500",
+              gradient: "from-indigo-500 to-purple-500",
             },
             {
               icon: BarChart3,
               title: "Career Roadmap",
               desc: "Get a step-by-step learning roadmap. Know what to learn and when to learn it, everything becomes clear.",
-              gradient: "from-green-500 to-emerald-500",
+              gradient: "from-indigo-500 to-purple-500",
             },
             {
               icon: Users,
               title: "Peer Comparison",
               desc: "See what the top 10% students are doing. Learn from the journey of successful students and improve.",
-              gradient: "from-yellow-500 to-orange-500",
+              gradient: "from-indigo-500 to-purple-500",
             },
             {
               icon: Sparkles,
               title: "AI Mentor",
               desc: "24/7 AI chatbot mentor that solves career doubts, suggests resources, and keeps you motivated.",
-              gradient: "from-red-500 to-pink-500",
+              gradient: "from-indigo-500 to-purple-500",
             },
           ].map((feature, idx) => (
             <motion.div
