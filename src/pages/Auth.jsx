@@ -11,6 +11,7 @@ import {
   X,
   Shield,
   Crown,
+  Sparkles,
 } from "lucide-react";
 
 export default function Auth() {
@@ -125,7 +126,7 @@ export default function Auth() {
             whileHover={{ scale: 1.1, rotate: 360 }}
             transition={{ duration: 0.5 }}
           >
-            <Brain className="w-8 h-8 text-white" />
+            <Sparkles className="w-6 h-6 text-white" />
           </motion.div>
           <h2 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
             MindStep

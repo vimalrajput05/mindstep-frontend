@@ -8,6 +8,8 @@ import PsychometricTest from "./pages/PsychometricTest";
 import Demo from "./pages/Demo";
 import Profile from "./pages/Profile";
 import SkillManager from "./pages/SkillManager";
+import MarksheetAnalyzer from "./pages/MarksheetAnalyzer";
+import LearningTracker from "./pages/LearningTracker";
 
 export default function App() {
   return (
@@ -21,6 +23,9 @@ export default function App() {
         <Route path="/demo" element={<Demo />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/skills" element={<SkillManager />} />
+         <Route path="/marksheet" element={<MarksheetAnalyzer />} /> {/* ← ADD THIS */}
+         <Route path="/learning-tracker" element={<LearningTracker />} /> {/* ← ADD THIS */}
+      
 
 
       </Routes>

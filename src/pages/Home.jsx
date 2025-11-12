@@ -78,11 +78,9 @@ export default function Home() {
               whileHover={{ scale: 1.05 }}
               transition={{ type: "spring", stiffness: 300 }}
             >
-              <Brain
-                className={`w-8 h-8 ${
-                  darkMode ? "text-indigo-400" : "text-indigo-600"
-                }`}
-              />
+              <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center shadow-lg">
+                <Sparkles className="w-6 h-6 text-white" />
+              </div>
               <span className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
                 MindStep
               </span>
@@ -819,7 +817,7 @@ export default function Home() {
                 className="flex items-center gap-2 mb-4"
                 whileHover={{ scale: 1.05 }}
               >
-                <Brain className="w-6 h-6 text-indigo-400" />
+                <Sparkles className="w-6 h-6 text-white" />
                 <span className="text-xl font-bold text-white">MindStep</span>
               </motion.div>
               <p className="text-sm">
