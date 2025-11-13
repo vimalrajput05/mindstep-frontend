@@ -22,6 +22,7 @@ import {
   DownloadCloud,
   X,
   User,
+  Bot,
 } from "lucide-react";
 
 export default function Dashboard() {
@@ -658,7 +659,7 @@ export default function Dashboard() {
                       </div>
                     </div>
                     <button
-                      onClick={() => alert("Open node detail (demo)")}
+                      onClick={() => navigate("/career-roadmap")} // 👈 Add this
                       className="px-3 py-1 rounded-lg border text-sm"
                     >
                       Open
@@ -703,7 +704,7 @@ export default function Dashboard() {
               )}
             </motion.div>
 
-            <motion.div
+            {/* <motion.div
               className={`p-6 rounded-2xl ${
                 darkMode
                   ? "bg-gray-900/60 border-gray-800"
@@ -758,6 +759,85 @@ export default function Dashboard() {
                   </button>
                 </div>
               </div>
+            </motion.div> */}
+            <motion.div
+              className={`p-6 rounded-2xl ${
+                darkMode
+                  ? "bg-gray-900/60 border-gray-800"
+                  : "bg-white border-gray-200"
+              } border shadow-lg relative`}
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-bold">AI Career Mentor</h3>
+                <div
+                  className={`px-3 py-1 rounded-full text-xs font-bold bg-yellow-400 text-gray-900`}
+                >
+                  PREMIUM
+                </div>
+              </div>
+
+              <div
+                className={`p-4 rounded-xl ${
+                  darkMode ? "bg-gray-900/50" : "bg-gray-50"
+                } mb-4`}
+              >
+                <div className="flex items-start gap-3">
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center flex-shrink-0">
+                    <Bot className="w-6 h-6 text-white" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="font-semibold">
+                      AI Mentor: "Ask me anything!"
+                    </div>
+                    <div
+                      className={`text-sm mt-1 ${
+                        darkMode ? "text-gray-400" : "text-gray-600"
+                      }`}
+                    >
+                      Get instant career guidance, learning resources, and
+                      personalized advice 24/7.
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-2 text-sm mb-4">
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="w-4 h-4 text-green-500" />
+                  <span>Career guidance & roadmap planning</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="w-4 h-4 text-green-500" />
+                  <span>Learning resources & course recommendations</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="w-4 h-4 text-green-500" />
+                  <span>Interview preparation tips</span>
+                </div>
+              </div>
+
+              {isPremium ? (
+                <Link to="/ai-mentor">
+                  <motion.button
+                    className="w-full px-4 py-3 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold shadow-lg flex items-center justify-center gap-2"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <Bot className="w-5 h-5" />
+                    Open AI Mentor
+                  </motion.button>
+                </Link>
+              ) : (
+                <motion.button
+                  onClick={() => setShowUpgradeModal(true)}
+                  className="w-full px-4 py-3 rounded-xl bg-gradient-to-r from-yellow-400 to-orange-400 text-gray-900 font-bold shadow-lg"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <Crown className="w-4 h-4 inline mr-2" />
+                  Upgrade to Unlock
+                </motion.button>
+              )}
             </motion.div>
           </motion.section>
 
