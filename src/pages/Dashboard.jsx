@@ -952,6 +952,13 @@ export default function Dashboard() {
                   </div>
                 </div>
               </div>
+              <Link
+  to="/peer-insights"
+  className="px-4 py-3 rounded-xl bg-purple-600 text-white font-semibold hover:bg-purple-700"
+>
+  View Peer Insights
+</Link>
+
             </motion.div>
           </motion.section>
 

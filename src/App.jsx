@@ -13,6 +13,7 @@ import LearningTracker from "./pages/LearningTracker";
 import AIMentor from "./pages/AIMentor";
 import CareerRoadmap from "./pages/CareerRoadmap";
 import Pay from "./pages/Pay";
+import PeerInsights from "./pages/PeerInsights";
 
 export default function App() {
   return (
@@ -31,6 +32,10 @@ export default function App() {
          <Route path="/ai-mentor" element={<AIMentor />} />
         <Route path="/career-roadmap" element={<CareerRoadmap />} />
         <Route path="/pay" element={<Pay />} />
+        <Route
+  path="/peer-insights"
+  element={<PeerInsights  />}
+/>
 
       
 
