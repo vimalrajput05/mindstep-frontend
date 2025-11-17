@@ -12,6 +12,7 @@ import MarksheetAnalyzer from "./pages/MarksheetAnalyzer";
 import LearningTracker from "./pages/LearningTracker";
 import AIMentor from "./pages/AIMentor";
 import CareerRoadmap from "./pages/CareerRoadmap";
+import Pay from "./pages/Pay";
 
 export default function App() {
   return (
@@ -29,6 +30,8 @@ export default function App() {
          <Route path="/learning-tracker" element={<LearningTracker />} /> 
          <Route path="/ai-mentor" element={<AIMentor />} />
         <Route path="/career-roadmap" element={<CareerRoadmap />} />
+        <Route path="/pay" element={<Pay />} />
+
       
 
 

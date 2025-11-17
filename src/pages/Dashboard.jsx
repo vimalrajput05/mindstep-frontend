@@ -1024,7 +1024,7 @@ export default function Dashboard() {
 
               <div className="mt-6 flex items-center gap-3">
                 <button
-                  onClick={upgradeToPremium}
+                  onClick={() => navigate("/pay")}
                   disabled={busy}
                   className={`px-5 py-3 rounded-xl bg-gradient-to-r from-yellow-400 to-orange-400 text-gray-900 font-bold shadow-lg ${
                     busy ? "opacity-60" : "hover:scale-105"
