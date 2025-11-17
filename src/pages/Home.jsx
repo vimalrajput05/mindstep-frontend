@@ -713,7 +713,7 @@ export default function Home() {
               animate={{ x: ["-100%", "100%"] }}
               transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
             />
-            <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 bg-yellow-400 text-yellow-900 rounded-full text-sm font-bold shadow-lg">
+            <div className="absolute top-0.5 left-1/2 -translate-x-1/2 px-4 py-1 bg-yellow-400 text-yellow-900 rounded-full text-sm font-bold shadow-lg">
               MOST POPULAR
             </div>
             <h3 className="text-2xl font-bold text-white mb-2 relative z-10">
