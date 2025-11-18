@@ -614,232 +614,169 @@ export default function Dashboard() {
           </motion.section>
 
           {/* PREMIUM: Roadmap & Learning */}
-          <motion.section
-            variants={fadeIn}
-            className="grid lg:grid-cols-2 gap-6"
+<motion.section
+  variants={fadeIn}
+  className="grid lg:grid-cols-2 gap-6"
+>
+  <motion.div
+    className={`p-6 rounded-2xl ${
+      darkMode
+        ? "bg-gray-900/60 border-gray-800"
+        : "bg-white border-gray-200"
+    } border shadow-lg relative`}
+  >
+    <div className="flex items-center justify-between mb-4">
+      <h3 className="text-lg font-bold">Interactive Career Roadmap</h3>
+      <div
+        className={`px-3 py-1 rounded-full text-xs font-bold bg-yellow-400 text-gray-900`}
+      >
+        PREMIUM
+      </div>
+    </div>
+
+    <div
+      className={`p-4 rounded-xl ${
+        darkMode ? "bg-gray-900/50" : "bg-gray-50"
+      } mb-4`}
+    >
+      <div className="flex items-start gap-3">
+        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center flex-shrink-0">
+          <Target className="w-6 h-6 text-white" />
+        </div>
+        <div className="flex-1">
+          <div className="font-semibold">
+            Plan Your Career Path
+          </div>
+          <div
+            className={`text-sm mt-1 ${
+              darkMode ? "text-gray-400" : "text-gray-600"
+            }`}
           >
-            <motion.div
-              className={`p-6 rounded-2xl ${
-                darkMode
-                  ? "bg-gray-900/60 border-gray-800"
-                  : "bg-white border-gray-200"
-              } border shadow-lg relative`}
-            >
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-bold">
-                  Interactive Career Roadmap
-                </h3>
-                <div className="text-xs text-gray-500">
-                  Click nodes to expand
-                </div>
-              </div>
+            Explore interactive milestones, track progress, and get personalized career guidance tailored to your goals.
+          </div>
+        </div>
+      </div>
+    </div>
 
-              <div className="space-y-3">
-                {roadmap.map((node, idx) => (
-                  <motion.div
-                    key={node.id}
-                    whileHover={{ scale: 1.02 }}
-                    className={`flex items-center gap-3 p-3 rounded-xl ${
-                      darkMode ? "bg-gray-900/50" : "bg-gray-50"
-                    }`}
-                  >
-                    <div
-                      className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                        idx % 2 === 0
-                          ? "bg-indigo-600 text-white"
-                          : "bg-yellow-400 text-gray-900"
-                      } font-bold`}
-                    >
-                      {idx + 1}
-                    </div>
-                    <div className="flex-1">
-                      <div className="font-semibold">{node.title}</div>
-                      <div className="text-xs text-gray-500">
-                        {node.eta} • {node.difficulty}
-                      </div>
-                    </div>
-                    <button
-                      onClick={() => navigate("/career-roadmap")} // 👈 Add this
-                      className="px-3 py-1 rounded-lg border text-sm"
-                    >
-                      Open
-                    </button>
-                  </motion.div>
-                ))}
-              </div>
+    <div className="space-y-2 text-sm mb-4">
+      <div className="flex items-center gap-2">
+        <CheckCircle className="w-4 h-4 text-green-500" />
+        <span>Step-by-step career planning with milestones</span>
+      </div>
+      <div className="flex items-center gap-2">
+        <CheckCircle className="w-4 h-4 text-green-500" />
+        <span>Progress tracking and difficulty assessments</span>
+      </div>
+      <div className="flex items-center gap-2">
+        <CheckCircle className="w-4 h-4 text-green-500" />
+        <span>Personalized recommendations for skill development</span>
+      </div>
+    </div>
 
-              {!isPremium && !isAdmin && (
-                <AnimatePresence>
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 0.95 }}
-                    exit={{ opacity: 0 }}
-                    className="absolute inset-0 bg-black/60 rounded-2xl flex items-center justify-center z-20"
-                  >
-                    <div className="text-center text-white p-6">
-                      <Lock className="mx-auto mb-3 w-10 h-10" />
-                      <div className="text-xl font-bold mb-1">
-                        Premium Feature
-                      </div>
-                      <div className="text-sm mb-4">
-                        Interactive roadmap is available for Premium users only.
-                      </div>
-                      <div className="flex gap-3 justify-center">
-                        <button
-                          onClick={() => setShowUpgradeModal(true)}
-                          className="px-4 py-2 bg-yellow-400 text-gray-900 rounded-lg font-semibold"
-                        >
-                          Upgrade
-                        </button>
-                        <button
-                          onClick={() => alert("Demo preview (read-only)")}
-                          className="px-4 py-2 border rounded-lg"
-                        >
-                          Preview
-                        </button>
-                      </div>
-                    </div>
-                  </motion.div>
-                </AnimatePresence>
-              )}
-            </motion.div>
+    {isPremium ? (
+      <Link to="/career-roadmap">
+        <motion.button
+          className="w-full px-4 py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold shadow-lg flex items-center justify-center gap-2"
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+        >
+          <Target className="w-5 h-5" />
+          Open Career Roadmap
+        </motion.button>
+      </Link>
+    ) : (
+      <motion.button
+        onClick={() => setShowUpgradeModal(true)}
+        className="w-full px-4 py-3 rounded-xl bg-gradient-to-r from-yellow-400 to-orange-400 text-gray-900 font-bold shadow-lg"
+        whileHover={{ scale: 1.02 }}
+        whileTap={{ scale: 0.98 }}
+      >
+        <Crown className="w-4 h-4 inline mr-2" />
+        Upgrade to Unlock
+      </motion.button>
+    )}
+  </motion.div>
 
-            {/* <motion.div
-              className={`p-6 rounded-2xl ${
-                darkMode
-                  ? "bg-gray-900/60 border-gray-800"
-                  : "bg-white border-gray-200"
-              } border shadow-lg`}
-            >
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-bold">Weekly Learning Tracker</h3>
-                <div className="text-xs text-gray-500">Last 4 weeks</div>
-              </div>
+  <motion.div
+    className={`p-6 rounded-2xl ${
+      darkMode
+        ? "bg-gray-900/60 border-gray-800"
+        : "bg-white border-gray-200"
+    } border shadow-lg relative`}
+  >
+    <div className="flex items-center justify-between mb-4">
+      <h3 className="text-lg font-bold">AI Career Mentor</h3>
+      <div
+        className={`px-3 py-1 rounded-full text-xs font-bold bg-yellow-400 text-gray-900`}
+      >
+        PREMIUM
+      </div>
+    </div>
 
-              <div className="flex items-end gap-3 h-40 mb-4">
-                {learningTracker.map((w, i) => {
-                  const max = 12;
-                  const heightPct = (w.hours / max) * 100;
-                  return (
-                    <div
-                      key={w.week}
-                      className="flex-1 flex flex-col items-center"
-                    >
-                      <motion.div
-                        initial={{ height: 0 }}
-                        animate={{ height: `${heightPct}%` }}
-                        transition={{ duration: 0.8, delay: i * 0.08 }}
-                        className="w-full rounded-t-xl bg-gradient-to-t from-indigo-500 to-purple-500"
-                      />
-                      <div className="text-xs mt-2">{w.week}</div>
-                      <div className="text-xs text-gray-500">{w.hours}h</div>
-                    </div>
-                  );
-                })}
-              </div>
+    <div
+      className={`p-4 rounded-xl ${
+        darkMode ? "bg-gray-900/50" : "bg-gray-50"
+      } mb-4`}
+    >
+      <div className="flex items-start gap-3">
+        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center flex-shrink-0">
+          <Bot className="w-6 h-6 text-white" />
+        </div>
+        <div className="flex-1">
+          <div className="font-semibold">
+            AI Mentor: "Ask me anything!"
+          </div>
+          <div
+            className={`text-sm mt-1 ${
+              darkMode ? "text-gray-400" : "text-gray-600"
+            }`}
+          >
+            Get instant career guidance, learning resources, and
+            personalized advice 24/7.
+          </div>
+        </div>
+      </div>
+    </div>
 
-              <div>
-                <h4 className="font-semibold mb-2">AI Mentor (Demo)</h4>
-                <div className="p-3 rounded-lg bg-gray-50 dark:bg-gray-900/40 mb-3">
-                  <div className="text-sm text-gray-600 dark:text-gray-400">
-                    AI Mentor: "Try asking 'What should I learn next for Data
-                    Science?'"
-                  </div>
-                </div>
-                <div className="flex gap-2">
-                  <input
-                    placeholder="Ask a question (demo)"
-                    className="flex-1 px-3 py-2 rounded-lg border dark:border-gray-700 bg-white dark:bg-gray-900/60 text-gray-900 dark:text-gray-100"
-                  />
-                  <button
-                    onClick={() => alert("AI reply (demo)")}
-                    className="px-4 py-2 bg-indigo-600 text-white rounded-lg"
-                  >
-                    Send
-                  </button>
-                </div>
-              </div>
-            </motion.div> */}
-            <motion.div
-              className={`p-6 rounded-2xl ${
-                darkMode
-                  ? "bg-gray-900/60 border-gray-800"
-                  : "bg-white border-gray-200"
-              } border shadow-lg relative`}
-            >
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-bold">AI Career Mentor</h3>
-                <div
-                  className={`px-3 py-1 rounded-full text-xs font-bold bg-yellow-400 text-gray-900`}
-                >
-                  PREMIUM
-                </div>
-              </div>
+    <div className="space-y-2 text-sm mb-4">
+      <div className="flex items-center gap-2">
+        <CheckCircle className="w-4 h-4 text-green-500" />
+        <span>Career guidance & roadmap planning</span>
+      </div>
+      <div className="flex items-center gap-2">
+        <CheckCircle className="w-4 h-4 text-green-500" />
+        <span>Learning resources & course recommendations</span>
+      </div>
+      <div className="flex items-center gap-2">
+        <CheckCircle className="w-4 h-4 text-green-500" />
+        <span>Interview preparation tips</span>
+      </div>
+    </div>
 
-              <div
-                className={`p-4 rounded-xl ${
-                  darkMode ? "bg-gray-900/50" : "bg-gray-50"
-                } mb-4`}
-              >
-                <div className="flex items-start gap-3">
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center flex-shrink-0">
-                    <Bot className="w-6 h-6 text-white" />
-                  </div>
-                  <div className="flex-1">
-                    <div className="font-semibold">
-                      AI Mentor: "Ask me anything!"
-                    </div>
-                    <div
-                      className={`text-sm mt-1 ${
-                        darkMode ? "text-gray-400" : "text-gray-600"
-                      }`}
-                    >
-                      Get instant career guidance, learning resources, and
-                      personalized advice 24/7.
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-2 text-sm mb-4">
-                <div className="flex items-center gap-2">
-                  <CheckCircle className="w-4 h-4 text-green-500" />
-                  <span>Career guidance & roadmap planning</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle className="w-4 h-4 text-green-500" />
-                  <span>Learning resources & course recommendations</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle className="w-4 h-4 text-green-500" />
-                  <span>Interview preparation tips</span>
-                </div>
-              </div>
-
-              {isPremium ? (
-                <Link to="/ai-mentor">
-                  <motion.button
-                    className="w-full px-4 py-3 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold shadow-lg flex items-center justify-center gap-2"
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    <Bot className="w-5 h-5" />
-                    Open AI Mentor
-                  </motion.button>
-                </Link>
-              ) : (
-                <motion.button
-                  onClick={() => setShowUpgradeModal(true)}
-                  className="w-full px-4 py-3 rounded-xl bg-gradient-to-r from-yellow-400 to-orange-400 text-gray-900 font-bold shadow-lg"
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <Crown className="w-4 h-4 inline mr-2" />
-                  Upgrade to Unlock
-                </motion.button>
-              )}
-            </motion.div>
-          </motion.section>
+    {isPremium ? (
+      <Link to="/ai-mentor">
+        <motion.button
+          className="w-full px-4 py-3 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold shadow-lg flex items-center justify-center gap-2"
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+        >
+          <Bot className="w-5 h-5" />
+          Open AI Mentor
+        </motion.button>
+      </Link>
+    ) : (
+      <motion.button
+        onClick={() => setShowUpgradeModal(true)}
+        className="w-full px-4 py-3 rounded-xl bg-gradient-to-r from-yellow-400 to-orange-400 text-gray-900 font-bold shadow-lg"
+        whileHover={{ scale: 1.02 }}
+        whileTap={{ scale: 0.98 }}
+      >
+        <Crown className="w-4 h-4 inline mr-2" />
+        Upgrade to Unlock
+      </motion.button>
+    )}
+  </motion.div>
+</motion.section>
 
           {/* LEARNING TRACKER & PEER COMPARISON */}
           <motion.section
@@ -919,47 +856,52 @@ export default function Dashboard() {
               </Link>
             </motion.div>
 
-            {/* Peer Insights - same as before */}
-            <motion.div
-              className={`p-6 rounded-2xl ${
-                darkMode
-                  ? "bg-gray-900/60 border-gray-800"
-                  : "bg-white border-gray-200"
-              } border shadow-lg`}
-            >
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-bold">Peer Insights</h3>
-                <div className="text-xs text-gray-500">Top 10%</div>
-              </div>
-
-              <div className="grid grid-cols-1 gap-3">
-                <div className="p-3 rounded-lg bg-gray-50 dark:bg-gray-900/40">
-                  <div className="text-xs text-gray-500">
-                    Verified skills (top)
-                  </div>
-                  <div className="text-2xl font-bold">12+</div>
-                </div>
-                <div className="p-3 rounded-lg bg-gray-50 dark:bg-gray-900/40">
-                  <div className="text-xs text-gray-500">Avg placement</div>
-                  <div className="text-2xl font-bold">
-                    TCS, Accenture, Infosys
-                  </div>
-                </div>
-                <div className="p-3 rounded-lg bg-gray-50 dark:bg-gray-900/40">
-                  <div className="text-xs text-gray-500">Improve by</div>
-                  <div className="text-2xl font-bold">
-                    Projects + Verified skills
-                  </div>
-                </div>
-              </div>
-              <Link
-  to="/peer-insights"
-  className="px-4 py-3 rounded-xl bg-purple-600 text-white font-semibold hover:bg-purple-700"
+             {/* Peer Insights */}
+<motion.div
+  className={`p-6 rounded-2xl ${
+    darkMode
+      ? "bg-gray-900/60 border-gray-800"
+      : "bg-white border-gray-200"
+  } border shadow-lg`}
 >
-  View Peer Insights
-</Link>
+  <div className="flex items-center justify-between mb-4">
+    <h3 className="text-lg font-bold">Peer Insights</h3>
+    <div className="text-xs text-gray-500 dark:text-gray-400">Top 10%</div>
+  </div>
 
-            </motion.div>
+  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-3 mb-4">
+    <div className="p-3 rounded-lg bg-gray-50 dark:bg-gray-900/40">
+      <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">
+        Verified skills (top)
+      </div>
+      <div className="text-2xl font-bold">12+</div>
+    </div>
+    <div className="p-3 rounded-lg bg-gray-50 dark:bg-gray-900/40">
+      <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">
+        Avg placement
+      </div>
+      <div className="text-lg font-bold leading-tight">
+        TCS, Accenture, Infosys
+      </div>
+    </div>
+    <div className="p-3 rounded-lg bg-gray-50 dark:bg-gray-900/40 sm:col-span-2 lg:col-span-1">
+      <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">
+        Improve by
+      </div>
+      <div className="text-lg font-bold leading-tight">
+        Projects + Verified skills
+      </div>
+    </div>
+  </div>
+
+  <Link
+    to="/peer-insights"
+    className="block w-full px-4 py-3 rounded-xl bg-purple-600 text-white font-semibold text-center hover:bg-purple-700 transition-colors duration-200"
+  >
+    View Peer Insights
+  </Link>
+</motion.div>
+
           </motion.section>
 
           {/* FOOTER */}
