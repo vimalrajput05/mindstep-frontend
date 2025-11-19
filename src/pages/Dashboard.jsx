@@ -932,7 +932,7 @@ export default function Dashboard() {
               initial={{ y: 40, scale: 0.98 }}
               animate={{ y: 0, scale: 1 }}
               exit={{ y: 40, opacity: 0 }}
-              className="relative z-10 w-full max-w-xl p-6 rounded-2xl bg-white dark:bg-gray-900/80 border dark:border-gray-800 shadow-2xl"
+              className="relative z-10 w-full max-w-xl p-6 rounded-2xl bg-white dark:bg-gray-900 border dark:border-gray-800 shadow-2xl"
             >
               <div className="flex items-start justify-between gap-3">
                 <div>
